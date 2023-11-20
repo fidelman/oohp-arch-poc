@@ -24,7 +24,6 @@ export class PostsRepository {
     const postsDto =
       await this.dataGateway!.methods.postsControllerGetAllPosts();
 
-    console.log(postsDto);
     this.isPostsLoading = false;
     if (postsDto.data) {
       this.postsPm = postsDto.data;

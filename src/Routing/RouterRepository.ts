@@ -4,7 +4,7 @@ import { Types } from "../IOC/Types";
 import { PostsRepository } from "../Posts/PostsRepository";
 import { RouteConfig, RouterGateway } from "./RouterGateway";
 
-export type RouteId = "postsLink" | "homeLink" | "loadingSpinner" | "";
+export type RouteId = "postsLink" | "homeLink";
 
 type RouteParams = {
   path: string;
@@ -24,21 +24,17 @@ interface Route {
   onLeave?: () => void;
 }
 
-const LOADING_ROUTE: Route = {
-  routeId: "loadingSpinner",
+const HOME_ROUTE: Route = {
+  routeId: "homeLink",
   routeDef: {
-    path: "",
+    path: "/",
+    isSecure: false,
   },
 };
 
 @injectable()
 export class RouterRepository {
-  currentRoute: Route = {
-    routeId: "",
-    routeDef: {
-      path: "",
-    },
-  };
+  currentRoute: Route = HOME_ROUTE;
 
   constructor() {
     makeObservable(this, {
@@ -55,21 +51,14 @@ export class RouterRepository {
   onRouteChanged: (() => void) | null = null;
 
   routes: Route[] = [
-    {
-      routeId: "homeLink",
-      routeDef: {
-        path: "/",
-        isSecure: false,
-      },
-      onEnter: () => {},
-    },
+    HOME_ROUTE,
     {
       routeId: "postsLink",
       routeDef: {
         path: "/posts",
         isSecure: false,
       },
-      onEnter: () => this.postsRepository!.load(),
+      onEnter: () => this.postsRepository.load(),
     },
   ];
 
@@ -100,10 +89,10 @@ export class RouterRepository {
     const route = this.routes.find((route) => {
       return route.routeId === routeId;
     });
-    return route || LOADING_ROUTE;
+    return route || HOME_ROUTE;
   };
 
   goToId = async (routeId: string) => {
-    this.routerGateway!.goToId(routeId);
+    this.routerGateway.goToId(routeId);
   };
 }
